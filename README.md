@@ -3,7 +3,7 @@ This is a netunicorn connector for a local Docker infrastructure.
 
 
 This connector works only with the local Docker daemon, requires current user to be in the docker group
-and always presents a single host with the name "localhost".
+and always presents a single host with the name "dockerhost".
 
 ## Usage
 1. Attach the connector to the existing netunicorn director instance
