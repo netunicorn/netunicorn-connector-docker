@@ -1,6 +1,11 @@
-# netunicorn-connector-template
-This is a template repository for creating a new connector for the netunicorn platform.
+# netunicorn-connector-docker
+This is a netunicorn connector for a local Docker infrastructure.
 
-## How to use this template
-Use the code from \_\_main__.py as a starting point for your connector. The code is commented and should be self-explanatory.
-In addition, you can read the NetunicornProtocol comments in netunicorn-director-infrastructure package.
+
+This connector works only with the local Docker daemon, requires current user to be in the docker group
+and always presents a single host with the name "localhost".
+
+## Usage
+1. Attach the connector to the existing netunicorn director instance
+2. Provide a docker socket or tcp endpoint to the connector
+3. Optionally: ensure that use has access to the docker socket or tcp endpoint and is in the docker group
