@@ -4,6 +4,8 @@ import logging
 from logging import Logger
 from typing import Optional, Tuple, Any
 
+import yaml
+
 import docker
 import docker.errors
 
@@ -28,7 +30,16 @@ class DockerConnector(NetunicornConnectorProtocol):
             logger: Optional[Logger] = None
     ):
         self.connector_name = connector_name
-        self.base_url = configuration or 'unix://var/run/docker.sock'
+
+        if configuration is None:
+            self.base_url = 'unix://var/run/docker.sock'
+            self.default_network = None
+        else:
+            with open(configuration, 'r') as f:
+                config = yaml.safe_load(f)
+            self.base_url = config['netunicorn.infrastructure.connectors.docker.base_url']
+            self.default_network = config.get('netunicorn.infrastructure.providers.docker.default_network', None)
+
         self.client = docker.DockerClient(base_url=self.base_url)
         self.netunicorn_gateway = netunicorn_gateway
         self.logger = logger or logging.getLogger(__name__)
@@ -155,6 +166,7 @@ class DockerConnector(NetunicornConnectorProtocol):
                     detach=True,
                     tty=False,
                     environment=envvars,
+                    network=self.default_network,
                     ports=ports,
                     remove=True,
                     auto_remove=True,
