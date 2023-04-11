@@ -15,10 +15,10 @@ from netunicorn.base.environment_definitions import DockerImage
 from netunicorn.base.nodes import CountableNodePool, Node, Nodes
 from returns.result import Failure, Result, Success
 
-from netunicorn.director.infrastructure.connectors.protocol import (
+from netunicorn.director.base.connectors.protocol import (
     NetunicornConnectorProtocol,
 )
-from netunicorn.director.infrastructure.connectors.types import StopExecutorRequest
+from netunicorn.director.base.connectors.types import StopExecutorRequest
 
 
 class DockerConnector(NetunicornConnectorProtocol):
@@ -207,6 +207,34 @@ class DockerConnector(NetunicornConnectorProtocol):
                 self.logger.exception(e)
 
         return result
+
+    async def cleanup(
+            self,
+            experiment_id: str,
+            deployments: list[Deployment],
+            *args: Any,
+            **kwargs: Any
+    ) -> None:
+        # stop containers if they are still working
+        for deployment in deployments:
+            try:
+                container = self.client.containers.get(deployment.executor_id)
+                container.stop()
+                self.logger.debug(f"Stopped container {deployment.executor_id}")
+            except docker.errors.NotFound:
+                pass
+            except Exception as e:
+                self.logger.exception(e)
+
+        # remove images
+        for deployment in deployments:
+            try:
+                self.client.images.remove(deployment.environment_definition.image)
+                self.logger.debug(f"Removed image {deployment.environment_definition.image}")
+            except docker.errors.ImageNotFound:
+                self.logger.debug(f"Image {deployment.environment_definition.image} was not found")
+            except Exception as e:
+                self.logger.exception(e)
 
 
 async def test_main():
