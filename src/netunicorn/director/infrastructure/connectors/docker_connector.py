@@ -37,8 +37,8 @@ class DockerConnector(NetunicornConnectorProtocol):
         else:
             with open(configuration, 'r') as f:
                 config = yaml.safe_load(f)
-            self.base_url = config['netunicorn.infrastructure.connectors.docker.base_url']
-            self.default_network = config.get('netunicorn.infrastructure.providers.docker.default_network', None)
+            self.base_url = config['netunicorn.docker.base_url']
+            self.default_network = config.get('netunicorn.docker.default_network', None)
 
         self.client = docker.DockerClient(base_url=self.base_url)
         self.netunicorn_gateway = netunicorn_gateway
