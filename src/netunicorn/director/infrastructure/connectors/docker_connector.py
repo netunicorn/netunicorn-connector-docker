@@ -83,7 +83,9 @@ class DockerConnector(NetunicornConnectorProtocol):
         pool = CountableNodePool([
             Node(
                 name=self.nodename,
-                properties={},
+                properties={
+                    "netunicorn-environments": {"DockerImage"}
+                },
                 architecture=self.architecture
             )
         ])
