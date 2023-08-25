@@ -157,9 +157,15 @@ class DockerConnector(NetunicornConnectorProtocol):
             envvars['NETUNICORN_EXECUTOR_ID'] = deployment.executor_id
             envvars['NETUNICORN_EXPERIMENT_ID'] = experiment_id
 
+            # TODO: temporary solution :(
+            volumes = []
+            add_args = deployment.environment_definition.runtime_context.additional_arguments
+            if add_args:
+                volumes = [x for x in add_args if x.startswith("/") and ":" in x]
+
             self.logger.debug(
                 f"Starting container {deployment.executor_id} with image {deployment.environment_definition.image} "
-                f"and environment variables {envvars}"
+                f"and environment variables {envvars} and volumes {volumes}"
             )
 
             try:
@@ -173,6 +179,7 @@ class DockerConnector(NetunicornConnectorProtocol):
                     remove=True,
                     auto_remove=True,
                     name=deployment.executor_id,
+                    volumes=volumes,
                 )
                 result[deployment.executor_id] = Success(None)
             except Exception as e:
