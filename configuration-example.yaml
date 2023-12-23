@@ -1,3 +1,4 @@
 ---
 netunicorn.docker.base_url: "unix://var/run/docker.sock"    # Docker daemon base URL
 netunicorn.docker.default_network:  "bridge"                # Default Docker network
+netunicorn.docker.access.tags:  ["test"]                    # netUnicorn access tags

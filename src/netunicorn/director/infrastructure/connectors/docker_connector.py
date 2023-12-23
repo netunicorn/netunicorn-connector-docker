@@ -34,11 +34,13 @@ class DockerConnector(NetunicornConnectorProtocol):
         if configuration is None:
             self.base_url = 'unix://var/run/docker.sock'
             self.default_network = None
+            self.access_tags = []
         else:
             with open(configuration, 'r') as f:
                 config = yaml.safe_load(f)
             self.base_url = config['netunicorn.docker.base_url']
             self.default_network = config.get('netunicorn.docker.default_network', None)
+            self.access_tags = config.get('netunicorn.docker.access.tags', [])
 
         self.client = docker.DockerClient(base_url=self.base_url)
         self.netunicorn_gateway = netunicorn_gateway
@@ -84,7 +86,8 @@ class DockerConnector(NetunicornConnectorProtocol):
             Node(
                 name=self.nodename,
                 properties={
-                    "netunicorn-environments": {"DockerImage"}
+                    "netunicorn-environments": {"DockerImage"},
+                    "netunicorn-access-tags": self.access_tags,
                 },
                 architecture=self.architecture
             )
