@@ -192,7 +192,7 @@ class DockerConnector(NetunicornConnectorProtocol):
                     detach=True,
                     tty=False,
                     environment=envvars,
-                    network=self.default_network,
+                    network=deployment.environment_definition.runtime_context.network or self.default_network,
                     ports=ports,
                     remove=True,
                     auto_remove=True,
