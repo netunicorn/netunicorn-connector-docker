@@ -52,7 +52,7 @@ class DockerConnector(NetunicornConnectorProtocol):
         self.architecture = Architecture.UNKNOWN
         if version['Arch'] == 'amd64':
             self.architecture = Architecture.LINUX_AMD64
-        elif version['Arch'] == 'aarch64':
+        elif version['Arch'] in {'aarch64', 'arm64'}:
             self.architecture = Architecture.LINUX_ARM64
         else:
             self.logger.warning(f"Unknown architecture: {version['Arch']}")
